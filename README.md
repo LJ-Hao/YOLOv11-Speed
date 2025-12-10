@@ -1,113 +1,219 @@
-# YOLOv11 Object Detection and Tracking
+# YOLOv11 Object Detection and Speed Estimation
 
-This project provides real-time object detection and tracking using Hailo AI accelerators with YOLO models.
+YOLOv11-Speed is a comprehensive real-time object detection, tracking, and speed estimation system optimized for Hailo AI accelerators. This project enables efficient detection of objects (with focus on persons and vehicles) with simultaneous tracking and speed calculation capabilities.
 
-## Project Structure
+## ✨ Features
+
+- **Real-time Object Detection**: Using optimized YOLOv11 models for fast inference
+- **Multi-Object Tracking**: BYTE (ByteTrack) tracking algorithm for consistent object identification across frames
+- **Speed Estimation**: Advanced speed calculation for tracked objects using pixel-to-real-world distance conversion
+- **Flexible Input Support**: Images, videos, and camera streams
+- **Configurable Labels**: Support for detecting specific object classes (default: person, car)
+- **Performance Optimized**: Designed for Hailo AI accelerators for high-performance inference
+
+## 📁 Project Structure
 
 ```
-yolov11_speed/
-├── run_detection.py          # Main entry point to run the detection
-├── requirements.txt          # Python dependencies
-├── download_resources.sh     # Script to download models and sample data
-├── README.md                 # This file
-├── src/                      # Source code directory
-│   ├── __init__.py
-│   ├── object_detection.py              # Main detection script
-│   ├── object_detection_post_process.py # Post-processing functions
-│   ├── config/               # Configuration files
-│   │   ├── __init__.py
-│   │   ├── config.json       # Detection and tracking parameters
-│   │   └── coco.txt          # COCO dataset labels
-│   ├── data/                 # Sample data
-│   │   ├── __init__.py
-│   │   ├── bus.jpg           # Sample input image
-│   │   └── full_mov_slow.mp4 # Sample input video
-│   ├── models/               # HEF model files
-│   │   ├── __init__.py
-│   │   └── yolov11n.hef      # YOLOv11 model
-│   ├── tracker/              # Object tracking modules
-│   │   ├── __init__.py
-│   │   ├── byte_tracker.py   # BYTE tracker implementation
-│   │   ├── kalman_filter.py  # Kalman filter for tracking
-│   │   ├── matching.py       # Track matching algorithms
-│   │   └── basetrack.py      # Base tracking class
-│   ├── utils/                # Utility functions
-│   │   ├── __init__.py
-│   │   ├── hailo_inference.py # Hailo inference wrapper
-│   │   └── toolbox.py        # Common utilities
-│   └── tests/                # Test files
-│       └── __init__.py
+YOLOv11-Speed/
+├── LICENSE                    # MIT License
+├── README.md                 # Project documentation
+├── docker-compose.yml        # Docker orchestration
+├── Docker.md                 # Docker documentation
+├── Dockerfile               # Docker build configuration
+├── requirements.txt         # Python dependencies
+├── run_detection.py         # Main entry point
+├── .env/                    # Environment configuration
+├── .github/                 # GitHub workflows and actions
+├── output/                  # Output directory for results
+└── src/                     # Source code directory
+    ├── __init__.py
+    ├── object_detection.py              # Main detection pipeline
+    ├── object_detection_post_process.py # Post-processing and visualization
+    ├── speed_estimation.py             # Speed calculation algorithms
+    ├── config/                        # Configuration files
+    │   ├── __init__.py
+    │   ├── config.json                # Detection and tracking parameters
+    │   └── coco.txt                   # COCO dataset labels
+    ├── models/                        # Model files
+    │   ├── __init__.py
+    │   └── yolov11n.hef              # Optimized YOLOv11 model for Hailo
+    ├── tracker/                       # Object tracking modules
+    │   ├── __init__.py
+    │   ├── byte_tracker.py           # BYTE tracker implementation
+    │   ├── kalman_filter.py          # Kalman filter for motion prediction
+    │   ├── matching.py               # Track matching algorithms
+    │   └── basetrack.py              # Base tracking class
+    ├── utils/                         # Utility functions
+    │   ├── __init__.py
+    │   ├── hailo_inference.py        # Hailo inference wrapper
+    │   └── toolbox.py                # Common utilities and helper functions
+    └── __pycache__/                 # Python cache files
 ```
 
-## Requirements
+## 🛠️ Requirements
 
-- HailoRT 4.22.0
-- Python 3.8+
-- Dependencies listed in requirements.txt
+### Hardware
+- Hailo AI accelerator (Hailo-8 or Hailo-10)
+- Compatible PCIe slot for Hailo card
+- Camera or video input (for streaming applications)
 
-## Installation
+### Software
+- **Python**: 3.8 or higher
+- **HailoRT**: Version 4.22.0 or compatible
+- **Dependencies**: Listed in `requirements.txt`
 
-1. Install Hailo PCIe driver and PyHailoRT:
-    - Download from the Hailo website
+### System Dependencies
+- Linux operating system (tested on Ubuntu)
+- OpenCV-compatible camera drivers (for camera input)
+- Graphics acceleration (for visualization)
 
-2. Install Python dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+## 📦 Installation
 
-3. Download models and sample data:
-    ```bash
-    ./download_resources.sh --arch 8    # For Hailo-8
-    # or
-    ./download_resources.sh --arch 10   # For Hailo-10
-    ```
+### Prerequisites
+1. Install Hailo PCIe driver and PyHailoRT from the [Hailo website](https://hailo.ai/developer-zone/)
+2. Ensure your system has a compatible Hailo accelerator installed
 
-## Usage
+### Setup Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/YOLOv11-Speed.git
+   cd YOLOv11-Speed
+   ```
 
-### Run detection on a single image:
+2. Create a virtual environment (recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Ensure the required model file is available in `src/models/` (the repository includes `yolov11n.hef`)
+
+## 🚀 Usage
+
+### Basic Object Detection
 ```bash
+# Run detection on an image
 python run_detection.py -i src/data/bus.jpg -n src/models/yolov11n.hef
-```
 
-### Run detection with tracking:
-```bash
-python run_detection.py -i src/data/bus.jpg -n src/models/yolov11n.hef --track
-```
-
-### Run detection on a video:
-```bash
+# Run detection on a video
 python run_detection.py -i src/data/full_mov_slow.mp4 -n src/models/yolov11n.hef
 ```
 
-### Run detection on camera stream:
+### Enable Tracking
 ```bash
-python run_detection.py -i camera -n src/models/yolov11n.hef --track
+# Detection with object tracking
+python run_detection.py -i src/data/bus.jpg -n src/models/yolov11n.hef --track
+
+# Tracking with video input
+python run_detection.py -i src/data/full_mov_slow.mp4 -n src/models/yolov11n.hef --track
 ```
 
-### Run detection with custom labels (e.g., bird, car, person):
+### Speed Estimation
 ```bash
-python run_detection.py -i camera -n src/models/yolov11n.hef --track --speed-estimation --label bird car person
-```
-
-### Run detection with default labels (person and car):
-```bash
+# Detection with tracking and speed estimation (default: person, car)
 python run_detection.py -i camera -n src/models/yolov11n.hef --track --speed-estimation
+
+# With custom pixel distance calibration (e.g., 0.02 meters per pixel)
+python run_detection.py -i src/data/video.mp4 -n src/models/yolov11n.hef --track --speed-estimation --pixel-distance 0.02
 ```
 
-## Configuration
+### Custom Labels
+```bash
+# Detect specific classes (e.g., bird, car, person)
+python run_detection.py -i camera -n src/models/yolov11n.hef --track --speed-estimation --label bird car person
 
-Parameters for detection and tracking can be adjusted in `src/config/config.json`:
+# Detect only cars
+python run_detection.py -i camera -n src/models/yolov11n.hef --track --speed-estimation --label car
+```
 
-- `score_thres`: Minimum confidence score to display detections
-- `max_boxes_to_draw`: Maximum number of boxes to draw per frame
-- `tracker`: Parameters for the BYTE tracker
+### Camera Input
+```bash
+# From USB camera with custom resolution
+python run_detection.py -i camera -n src/models/yolov11n.hef --track --resolution hd --camera-width 1280 --camera-height 720
 
-## Output
+# With FPS display
+python run_detection.py -i camera -n src/models/yolov11n.hef --track --show-fps
+```
 
-The processed results are saved in the `output` directory by default.
+## ⚙️ Configuration
 
-## Notes
+The `src/config/config.json` file contains parameters for:
 
-- The project supports YOLOv5, YOLOv6, YOLOv7, YOLOv8, YOLOv9, YOLOv10, and YOLOx models
-- Only HEF files containing HailoRT Postprocess are supported
-- Images formats supported: JPG, JPEG, PNG, BMP
+- **Detection settings**:
+  - `score_thres`: Minimum confidence threshold for detections (default: 0.25)
+  - `max_boxes_to_draw`: Maximum number of detection boxes to render (default: 500)
+
+- **Tracking settings**:
+  - `track_thresh`: Detection confidence threshold for tracking (default: 0.1)
+  - `track_buffer`: Number of frames to buffer for tracking (default: 30)
+  - `match_thresh`: Threshold for matching detections to tracks (default: 0.9)
+  - `aspect_ratio_thresh`: Aspect ratio threshold for matching (default: 2.0)
+  - `min_box_area`: Minimum area of bounding box to consider (default: 500)
+  - `mot20`: Use MOT20 matching strategy (default: false)
+
+## 📊 Output
+
+- Processed images and videos are saved to the `output/` directory by default
+- Files are named based on input type with timestamps
+- Real-time speed information is displayed on tracked objects when enabled
+- FPS information is available when using the `--show-fps` flag
+
+## 🔧 Speed Estimation Algorithm
+
+The speed estimation system works by:
+
+1. **Position Tracking**: Using the BYTE tracker to maintain consistent object IDs across frames
+2. **Coordinate Logging**: Storing historical positions of tracked objects
+3. **Distance Calculation**: Converting pixel distances to real-world distances using the `--pixel-distance` parameter
+4. **Time Measurement**: Calculating time differences between positions
+5. **Speed Calculation**: Computing speed in km/h using distance over time
+6. **Smoothing**: Averaging recent speed measurements for stable display
+
+The default pixel distance is 0.01 meters per pixel (1 cm/pixel), but this should be calibrated based on your camera setup and real-world measurements.
+
+## 🐳 Docker Support
+
+The project includes Docker support for easy deployment:
+
+1. **Build the Docker image**:
+   ```bash
+   docker build -t yolov11-speed .
+   ```
+
+2. **Run with camera access** (Linux):
+   ```bash
+   docker run --rm -it --device=/dev/xdma0 --device=/dev/xdma_stat --device=/dev/hailo0 yolov11-speed
+   ```
+
+For detailed Docker instructions, see `Docker.md`.
+
+## 📈 Performance Optimization
+
+- The system is optimized for Hailo AI accelerators which provide high-performance inference
+- Multi-threaded architecture separates preprocessing, inference, and post-processing
+- Configurable batch size for optimization based on available resources
+- Efficient tracking algorithm minimizes computational overhead
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- YOLOv11 object detection models
+- BYTE (ByteTrack) multi-object tracking algorithm
+- Hailo Technologies for AI acceleration
+- OpenCV for computer vision operations

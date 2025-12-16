@@ -79,3 +79,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - BYTE (ByteTrack) multi-object tracking algorithm
 - Hailo Technologies for AI acceleration
 - OpenCV for computer vision operations
+
+## 💞 Top contributors:
+
+<a href="https://github.com/Seeed-Projects/Tutorial-of-AI-Kit-with-Raspberry-Pi-From-Zero-to-Hero/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Seeed-Projects/Tutorial-of-AI-Kit-with-Raspberry-Pi-From-Zero-to-Hero" alt="contrib.rocks image" />
+</a>
+
+## 🌟 Star History
+
+![Star History Chart](https://api.star-history.com/svg?repos=Seeed-Projects/Tutorial-of-AI-Kit-with-Raspberry-Pi-From-Zero-to-Hero&type=Date)

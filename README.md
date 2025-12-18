@@ -1,6 +1,6 @@
-# YOLOv11 Object Detection and Speed Estimation
+# YOLOv11 Hailo Tracker
 
-YOLOv11-Speed is a comprehensive real-time object detection, tracking, and speed estimation system optimized for Hailo AI accelerators. This project enables efficient detection of objects (with focus on persons and vehicles) with simultaneous tracking and speed calculation capabilities.
+YOLOv11-Hailo-Tracker is a comprehensive real-time object detection, tracking, and speed estimation system optimized for Hailo AI accelerators. This project enables efficient detection of objects (with focus on persons and vehicles) with simultaneous tracking and speed calculation capabilities.
 
 ## ✨ Features
 

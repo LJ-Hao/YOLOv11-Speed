@@ -98,7 +98,7 @@ Pre-built Docker images with Hailo support are available as GitHub Releases and 
 
 ```bash
 # Pull from GitHub Container Registry
-docker pull ghcr.io/seeed-projects/yolov11-hailo-tracker-hailo:latest
+docker pull ghcr.io/lj-hao/yolov11-hailo-tracker-hailo:latest
 
 # Run the container
 docker run -it --rm   -p 8000:8000   --privileged   --device /dev/hailo0:/dev/hailo0   -v /dev:/dev   ghcr.io/seeed-projects/yolov11-hailo-tracker-hailo:latest
